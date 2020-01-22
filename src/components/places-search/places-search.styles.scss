@@ -1,0 +1,32 @@
+.autocomplete-dropdown-container {
+	background-color: white;
+	box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.15);
+	padding: 2px 0;
+	margin-top: 6px;
+	border-radius: 5px;
+	border: solid 1px #e6e6e6;
+
+	&:empty {
+		display: none;
+	}
+
+	.suggestion-item {
+		border-bottom: 1px solid #eee;
+		padding: 3px 6px;
+		font-size: 13px;
+		
+		.secondary-text {
+			margin-left: 3px;
+			font-size: 11px;
+			color: #777;
+		}
+		&.active {
+			background-color: #DEEBFF;
+			cursor: pointer;
+		}
+
+		&:last-child {
+			border-bottom: none;
+		}
+	}
+}
