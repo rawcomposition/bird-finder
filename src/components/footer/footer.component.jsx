@@ -3,14 +3,14 @@ import './footer.styles.scss';
 import { ReactComponent as Birdy } from '../../assets/birdy.svg';
 const Footer = () => (
 	<React.Fragment>
-		<section class="contact bg-primary">
-			<div class="container">
+		<section className="footer-banner">
+			<div className="container">
 				<h2>Bird smarter, not harder <Birdy className='birdy'/></h2>
 			</div>
 		</section>
 
 		<footer>
-			<div class="container">
+			<div className="container">
 				<p>&copy; 2017 Adam Jackson. All Rights Reserved.<br/>mail@rawcomposition.com</p>
 			</div>
 		</footer>

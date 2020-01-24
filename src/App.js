@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.css';
-import './App.css';
+import './App.scss';
 import Header from './components/header/header.component';
 import Footer from './components/footer/footer.component';
 import FinderForm from './components/finder-form/finder-form.component';
+import HotspotResults from './components/hotspot-results/hotspot-results.component';
 
 
 const App = () => {
@@ -12,6 +13,7 @@ const App = () => {
 	const handleFind = response => {
 		setQueryData(response);
 	}
+	
 	return (
 		<div>
 			<Header/>
@@ -21,8 +23,8 @@ const App = () => {
 						<h2>Find a bird</h2>
 						<hr/>
 					</div>
-					<FinderForm handleFind={handleFind}/>
-					<ol className="hotspot-results mt-5"></ol>
+					<FinderForm handleFind={handleFind} />
+					<HotspotResults {...queryData} />
 				</div>
 			</section>
 			<Footer/>

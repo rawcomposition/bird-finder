@@ -1,0 +1,48 @@
+.results-container {
+	margin-top: 5rem;
+
+	.no-results {
+		text-align: center;
+		color: #666;
+
+	}
+
+	.progress-bar {
+		background-color: #dd4b39;
+		border-radius: none;
+	}
+	
+	.hotspot-results {
+		list-style-type: decimal;
+	}
+	
+	.hotspot-results li {
+		border-top: 1px solid #e9e9e9;
+		color: #858585;
+		padding: .75rem 1rem;
+		font-size: .75rem;
+		counter-increment: custom-counter;
+		position: relative;
+	}
+	
+	.hotspot-results li::before {
+		content: counter(custom-counter) ". ";
+		position: absolute;
+		top: 1rem;
+	}
+	
+	.hotspot-results a {
+		font-size: 1rem;
+		padding-left: .5rem;
+		font-weight: bold;
+	}
+	
+	.hotspot-results .progress {
+		height: 7px;
+		border-radius: 0;
+	}
+	
+	.hotspot-results .percent {
+		font-size: 1.2rem;
+	}
+}
