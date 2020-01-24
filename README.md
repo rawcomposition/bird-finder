@@ -7,3 +7,8 @@ The tool can be used at: [http://birding.rawcomposition.com](http://birding.rawc
 
 ## Contributing
 Feel free to open a pull request if you have a feature you would like to add. There's a few features I would like to add at somepoint to make it more useful.
+
+### To Do
+- Refresh cache after 30 days (currently hotspots are cached indefinitely)
+- Determine appropriate limits for how many hotspots can be processed and throw appropriate errors
+- Update URL with query parameters so links to specific results can be shared easily
