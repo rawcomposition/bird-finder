@@ -14,7 +14,7 @@ const HotspotResults = ({speciesCode, lat, lng, radius}) => {
 			setIsLoading(true);
 			setHotspots([]);
 			setError(false);
-			fetch(`find/search?code=${speciesCode}&lat=${lat}&lng=${lng}&distance=${radius}`)
+			fetch(`/api/?code=${speciesCode}&lat=${lat}&lng=${lng}&distance=${radius}`)
 				.then( response => {
 					return response.ok ? response.json() : Promise.reject(response);
 				})

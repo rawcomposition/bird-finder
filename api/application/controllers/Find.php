@@ -45,11 +45,6 @@ class Find extends CI_Controller {
 	
 	public function index()
 	{
-		$this->load->view( "find" );
-	}
-	
-	public function search()
-	{
 		$species_code = $_GET["code"];
 		$lat = $_GET["lat"];
 		$lng = $_GET["lng"];
