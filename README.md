@@ -6,7 +6,7 @@ This is a little project I put together using React and PHP (Codeigniter framewo
 The tool can be used at: [http://birding.rawcomposition.com](http://birding.rawcomposition.com)
 
 ## Contributing
-Feel free to open a pull request if you have a feature you would like to add. There's a few features I would like to add at somepoint to make it more useful.
+Feel free to open a pull request if you have a feature you would like to add. There's a few features I would like to add at some point to make it more useful.
 
 ### To Do
 - Refresh cache after 30 days (currently hotspots are cached indefinitely)
