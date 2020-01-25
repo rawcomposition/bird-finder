@@ -78,6 +78,10 @@ class Find extends CI_Controller {
 			}
 		}
 		
+		if(count($fetch_hotspots) > 50) {
+			$this->_show_json_error("That query returned too much data. Please choose a smaller radius or an area with fewer reports of the chosen species.");
+		}
+		
 		$this->_fetchMulti( $fetch_hotspots, function( $barchart, $location_id ) {
 			$hotspot_info = json_decode(file_get_contents("https://api.ebird.org/v2/ref/hotspot/info/$location_id"), true);
 			$location_name = $hotspot_info["name"];
@@ -117,19 +121,22 @@ class Find extends CI_Controller {
 				}
 			}
 		});
-		
-		$search_results = $this->db->select( "*" )
-			->from( "abundance" )
-			->where( "species_name", $species_name )
-			->where_in( "location_id", $all_hotspots )
-			->order_by( "average", "desc" )
-			->get()
-			->result_array();
-		
-		$search_results = array_map( function( $result ) {
-			$result["average"] = round( $result["average"] * 100 );
-			return $result;
-		}, $search_results );
+		if( count($all_hotspots) < 1 ) {
+			$search_results = [];
+		} else {
+			$search_results = $this->db->select( "*" )
+				->from( "abundance" )
+				->where( "species_name", $species_name )
+				->where_in( "location_id", $all_hotspots )
+				->order_by( "average", "desc" )
+				->get()
+				->result_array();
+			
+			$search_results = array_map( function( $result ) {
+				$result["average"] = round( $result["average"] * 100 );
+				return $result;
+			}, $search_results );
+		}
 		
 		return $this->output
 			->set_content_type('application/json')
@@ -226,5 +233,19 @@ class Find extends CI_Controller {
 		$d = $earth_radius * $c;  
 
 		return $d;  
+	}
+
+	function _show_json_error($message, $status_code = 500, $status_message = '') {
+		header('Cache-Control: no-cache, must-revalidate');
+		header('Content-type: application/json');
+		set_status_header($status_code, $status_message);
+
+		echo json_encode(
+			array(
+				'success' => false,
+				'message' => $message
+			)
+		);
+		exit;
 	}
 }

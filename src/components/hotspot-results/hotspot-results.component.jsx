@@ -8,22 +8,42 @@ const HotspotResults = ({speciesCode, lat, lng, radius}) => {
 	const [hotspots, setHotspots] = useState([]);
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState(false);
+	const [noResults, setNoResults] = useState(false);
+
+	const handleResponse = response => {
+		const genericError = "Oops. Something bad happened.";
+		if (response.ok) {
+			return response.json().catch(error => {
+				throw new Error(genericError);
+			});
+		} else {
+			return response.json().catch(error => {
+				throw new Error(genericError);
+			}).then(json => {
+				throw new Error(json.message);
+			});
+		}
+	}
 
 	useEffect( () => {
 		if( speciesCode && lat && lng && radius) {
 			setIsLoading(true);
 			setHotspots([]);
 			setError(false);
+			setNoResults(false)
 			fetch(`/api/?code=${speciesCode}&lat=${lat}&lng=${lng}&distance=${radius}`)
-				.then( response => {
-					return response.ok ? response.json() : Promise.reject(response);
-				})
+				.then( response => handleResponse(response) )
 				.then( data => {
 					setIsLoading(false);
 					setHotspots(data);
+					if(!data.length) {
+						setNoResults(true);
+					}
 				})
 				.catch( error => {
-					setError(true);
+					console.log(error);
+					const message = error.message || "Oops. An error occured";
+					setError(message);
 					setIsLoading(false);
 				});
 		}
@@ -32,8 +52,8 @@ const HotspotResults = ({speciesCode, lat, lng, radius}) => {
 	return (
 		<div className='results-container'>
 			{ isLoading ? <LoadingSpinner /> : ''}
-			{ error ? <ErrorAlert/> : '' }
-			{ hotspots.length < 0 && !isLoading && ! error ? <p className='no-results'>We couldn't find any hotspots. Try a different location or larger radius.</p> : '' }
+			{ error ? <ErrorAlert message={error}/> : '' }
+			{ noResults ? <p className='no-results'>We couldn't find any hotspots. Try a different location or larger radius.</p> : '' }
 			
 			<ol className="hotspot-results">
 				{hotspots.map( item => (

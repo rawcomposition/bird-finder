@@ -1,6 +1,6 @@
 import React from 'react';
 import './error-alert.styles.scss';
-const ErrorAlert = () => (
-	<div className='alert alert-warning error'>Oops. An error occured.</div>
+const ErrorAlert = ({message}) => (
+	<div className='alert alert-warning error'>{message}</div>
 )
 export default ErrorAlert;
