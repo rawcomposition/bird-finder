@@ -3,7 +3,7 @@ import './species-search.styles.scss';
 import AsyncSelect from 'react-select/async';
 import debounce from 'debounce-promise';
 
-const SpeciesSearch = ({handleChange}) => {
+const SpeciesSearch = ({handleChange, value, label}) => {
 	const wait = 300;
 	const loadOptions = inputValue => getAsyncOptions(inputValue);
 	const debouncedLoadOptions = debounce(loadOptions, wait);
@@ -29,7 +29,7 @@ const SpeciesSearch = ({handleChange}) => {
 	}
 	
 	return(
-		<AsyncSelect loadOptions={inputValue => debouncedLoadOptions(inputValue)} onChange={handleChange} placeholder="Search for a species..." className="species-select" />
+		<AsyncSelect loadOptions={inputValue => debouncedLoadOptions(inputValue)} onChange={handleChange} placeholder="Search for a species..." className="species-select" value={{value, label}} />
 	)
 }
 export default SpeciesSearch;
