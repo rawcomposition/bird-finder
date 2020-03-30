@@ -58,6 +58,8 @@ class Find extends CI_Controller {
 		$bounds = $this->_get_bounds( $lat, $lng, $distance );
 		$json = $this->getPage( "https://ebird.org/map/points?speciesCode=$species_code&byr=1900&eyr=2019&bmo=1&emo=12&maxY={$bounds['max_lat']}&maxX={$bounds['max_lng']}&minY={$bounds['min_lat']}&ev=Z&minX={$bounds['min_lng']}" );
 		
+		$this->db->query('DELETE FROM abundance WHERE created_at < DATE_SUB(NOW(), INTERVAL 30 DAY)');
+		
 		$all_hotspots = [];
 		$fetch_hotspots = [];
 		foreach( json_decode( $json, true ) as $hotspot ) {
@@ -78,7 +80,7 @@ class Find extends CI_Controller {
 			}
 		}
 		
-		if(count($fetch_hotspots) > 50) {
+		if(count($fetch_hotspots) > 75) {
 			$this->_show_json_error("That query returned too much data. Please choose a smaller radius or an area with fewer reports of the chosen species.");
 		}
 		
