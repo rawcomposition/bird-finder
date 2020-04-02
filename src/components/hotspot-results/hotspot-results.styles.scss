@@ -35,7 +35,11 @@
 		font-size: 1rem;
 		padding-left: .5rem;
 		font-weight: bold;
-		color: #005d6b;
+		color: #2c75c9;
+
+		&:hover, &:focus {
+			color: #315985;
+		}
 	}
 	
 	.hotspot-results .progress {
