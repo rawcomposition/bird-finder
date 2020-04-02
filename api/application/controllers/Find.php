@@ -126,7 +126,7 @@ class Find extends CI_Controller {
 		if( count($all_hotspots) < 1 ) {
 			$search_results = [];
 		} else {
-			$search_results = $this->db->select( "*" )
+			$search_results = $this->db->select( "location_id, average, species_name, location_name, total_checklists" )
 				->from( "abundance" )
 				->where( "species_name", $species_name )
 				->where_in( "location_id", $all_hotspots )
@@ -154,10 +154,11 @@ class Find extends CI_Controller {
 		$timeout= 120;
 		$dir			= dirname(__FILE__);
 		$cookie_file	= $dir . '/cookies/' . md5($_SERVER['REMOTE_ADDR']) . '.txt';
-		
+		$year = date("Y");  
+
 		foreach ($ids as $id) {
 			$req = curl_init();
-			curl_setopt( $req, CURLOPT_URL, "https://ebird.org/barchartData?r=$id&bmo=1&emo=12&byr=1900&eyr=2019&fmt=tsv");
+			curl_setopt( $req, CURLOPT_URL, "https://ebird.org/barchartData?r=$id&bmo=1&emo=12&byr=1900&eyr=$year&fmt=tsv");
 			curl_setopt( $req, CURLOPT_HEADER, 0);
 			curl_setopt($req, CURLOPT_FAILONERROR, true);
 			curl_setopt($req, CURLOPT_COOKIEFILE, $cookie_file);
