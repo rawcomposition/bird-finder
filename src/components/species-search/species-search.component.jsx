@@ -28,8 +28,13 @@ const SpeciesSearch = ({handleChange, value, label}) => {
 		});
 	}
 	
+	const selected_option = {
+		value,
+		label
+	}
+
 	return(
-		<AsyncSelect loadOptions={inputValue => debouncedLoadOptions(inputValue)} onChange={handleChange} placeholder="Search for a species..." className="species-select" value={{value, label}} />
+		<AsyncSelect loadOptions={inputValue => debouncedLoadOptions(inputValue)} onChange={handleChange} placeholder="Search for a species..." className="species-select" value={value ? selected_option : "undefined"} />
 	)
 }
 export default SpeciesSearch;

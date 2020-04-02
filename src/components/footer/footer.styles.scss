@@ -1,8 +1,9 @@
 .birdy {
-	width: 80px;
-	height: 80px;
+	width: 100px;
+	height: 100px;
 	margin-left: 15px;
 	color: #dd4b39;
+	transform: scaleX(-1);
 }
 
 footer {
@@ -27,7 +28,7 @@ footer {
 }
 	
 .footer-banner {
-	background: #fdcc52;
-	background: linear-gradient(#fdcc52, #fdc539);
 	text-align: center;
+	color: #555;
+	background:rgba(0,58,69,0.12);
 }
