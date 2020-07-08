@@ -1,5 +1,7 @@
 [![Screenshot](./screenshot.png)](http://worldbirder.info)
 
+## NOTE: eBird changed their internal API making this tool unusuable. I plan to fix it at some point, but for now, it doesn't work :(
+
 ## Bird Finder
 This is a little project I put together using React and PHP (Codeigniter framework). [eBird.org](ebird.org) doesn't currently provide a good way show hotspots in an area with the greatest probability of seeing a target bird. This tool attempts to address that. Unfortunately, eBird's API doesn't currently support retrieving the data this way, so I'm doing some creative fetching of resources outside of their API. This contributes to the tool being slower than expected because every hotspot that is analyzed requires a CSV file to be fetched from eBird servers. As a result, don't overuse this tool as it may cause undue strain on eBird servers if large areas with many hotspots are being analyzed. 
 
