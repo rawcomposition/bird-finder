@@ -1,9 +1,9 @@
 {
   "name": "bird-finder-api",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node app.js"
   },
   "type": "module",
   "author": "Adam Jackson",
