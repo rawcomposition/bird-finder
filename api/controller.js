@@ -1,6 +1,5 @@
 import puppeteer from 'puppeteer';
 import axios from 'axios';
-import { response } from 'express';
 
 export const index = async (req, res) => {
 	//To do: set constants from params
@@ -9,22 +8,92 @@ export const index = async (req, res) => {
 	const lng = -81.508896;
 	const distance = 10;
 
-	const locations = await getLocationsWithinBounds();
-	if (!locations) {
-		res.send('Error retrieving species locations');
-	}
-	const speciesInfo = await getSpeciesInfo(speciesCode);
+	/*const speciesInfo = await getSpeciesInfo(speciesCode);
 	if (!speciesInfo || speciesInfo?.category !== 'species') {
 		res.send('Error retrieving species');
 	}
 	const speciesName = speciesInfo.comName;
 	const bounds = getBounds(lat, lng, distance);
 
+	const locations = await getLocationsWithinBounds(speciesCode, bounds);
+	if (!locations) {
+		res.send('Error retrieving species locations');
+	}*/
+
+	//For development
+	const locations = [
+		{
+			hs: 1,
+			n: 'L1156858',
+		},
+		{
+			hs: 1,
+			n: 'L275473',
+		},
+	];
+
+	const hotspots = locations.filter(location => location.hs === 1 && location.n);
+
+	await updateBarcharts(hotspots, speciesCode);
+
 	res.send('Success');
 }
 
-const getLocationsWithinBounds = async () => {
-	const url = 'https://ebird.org/map/points?speciesCode=blubun&byr=1900&eyr=2021&yr=&bmo=1&emo=12&maxY=27.003050007744548&maxX=-97.1859875790417&minY=25.777830773864366&ev=Z&minX=-99.05229006927607';
+const updateBarcharts = async (hotspots, speciesCode) => {
+	const browser = await puppeteer.launch({
+		// TO DO: Skip loading assets
+		userDataDir: "./puppeteer_data"
+	});
+	const page = await browser.newPage();
+	await page.goto('https://ebird.org/myebird');
+
+	const needsLogin = await page.$('#input-user-name');
+	if (needsLogin) {
+		await page.type('#input-user-name', process.env.EBIRD_USERNAME);
+		await page.type('#input-password', process.env.EBIRD_PASSWORD);
+		await page.click('#form-submit');
+		await page.waitForNavigation();
+	}
+
+	const responses = await page.evaluate(async (hotspots, speciesCode) => {
+		const promises = hotspots.map(hotspot => () => fetch(`https://ebird.org/barchartData?fmt=json&spp=${speciesCode}&r=${hotspot.n}`).then(res => res.json()));
+
+		let json = [];
+		while (promises.length) {
+			const chunk = await Promise.all(promises.splice(0, 24).map(func => func()));
+			json = [...json, ...chunk];
+		}
+
+		return json;
+	}, hotspots, speciesCode);
+
+	browser.close();
+	
+	responses.forEach(async (response, index) => {
+		const data = response.dataRows[0];
+		const hotspotId = hotspots[index].n; // TO DO: Ensure hotspot indexes match responses indexes
+		const hotspotInfo = await axios.get(`https://api.ebird.org/v2/ref/hotspot/info/${hotspotId}`);
+		const percents = data.values;
+		const samples = data.values_N;
+		const totalObserved = percents.reduce((sum, percent, index) => sum + (percent * samples[index]));
+		const totalSamples = samples.reduce((sum, sampleSize) => sum + sampleSize);
+		const average = totalObserved / totalSamples;
+		const entry = {
+			average,
+			hotspotId,
+			totalSamples,
+			speciesName: data.name,
+			hotspotName: hotspotInfo.data.name,
+		}
+		console.log({entry});
+		//TO DO: Save to database
+	});
+	
+	
+}
+
+const getLocationsWithinBounds = async (speciesCode, {maxLat, minLat, maxLng, minLng}) => {
+	const url = `https://ebird.org/map/points?speciesCode=${speciesCode}&byr=1900&eyr=2021&yr=&bmo=1&emo=12&maxY=${maxLat}&maxX=${maxLng}&minY=${minLat}&ev=Z&minX=${minLng}`;
 	let json = null;
 	try {
 		const response = await getSecureEbirdContent(url);
