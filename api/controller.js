@@ -1,5 +1,6 @@
 import puppeteer from 'puppeteer';
 import axios from 'axios';
+import abundance from './models/abundance.js';
 
 export const index = async (req, res) => {
 	//To do: set constants from params
@@ -33,9 +34,7 @@ export const index = async (req, res) => {
 	];
 
 	const hotspots = locations.filter(location => location.hs === 1 && location.n);
-
 	await updateBarcharts(hotspots, speciesCode);
-
 	res.send('Success');
 }
 
@@ -78,15 +77,20 @@ const updateBarcharts = async (hotspots, speciesCode) => {
 		const totalObserved = percents.reduce((sum, percent, index) => sum + (percent * samples[index]));
 		const totalSamples = samples.reduce((sum, sampleSize) => sum + sampleSize);
 		const average = totalObserved / totalSamples;
-		const entry = {
-			average,
+		const filter = {
 			hotspotId,
+			speciesCode,
+		}
+		const update = {
+			average,
 			totalSamples,
 			speciesName: data.name,
 			hotspotName: hotspotInfo.data.name,
+			updatedAt: new Date(),
 		}
-		console.log({entry});
-		//TO DO: Save to database
+		await abundance.findOneAndUpdate(filter, update, {
+			upsert: true,
+		});
 	});
 	
 	
