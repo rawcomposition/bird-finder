@@ -8,37 +8,35 @@ export const index = async (req, res) => {
 	const lat = 41.155599;
 	const lng = -81.508896;
 	const distance = 10;
+	const thirtyDays = 30*24*60*60 * 1000;
 
-	/*const speciesInfo = await getSpeciesInfo(speciesCode);
-	if (!speciesInfo || speciesInfo?.category !== 'species') {
-		res.send('Error retrieving species');
-	}
-	const speciesName = speciesInfo.comName;
 	const bounds = getBounds(lat, lng, distance);
 
 	const locations = await getLocationsWithinBounds(speciesCode, bounds);
+
 	if (!locations) {
 		res.send('Error retrieving species locations');
-	}*/
+	}
 
-	//For development
-	const locations = [
-		{
-			hs: 1,
-			n: 'L1156858',
-		},
-		{
-			hs: 1,
-			n: 'L275473',
-		},
-	];
+	const hotspotsInRadius = await getHotspotsInRadius(lat, lng, distance);
+	const speciesHotspots = locations.filter(location => location.hs === 1 && location.n in hotspotsInRadius);
+	const hotspotIds = speciesHotspots.map(hotspot => hotspot.n);
+	const cachedHotspots = await abundance.find({ hotspotId: { $in: hotspotIds }}).lean();
+	const staleHotspots = cachedHotspots.filter(hotspot => new Date(hotspot.updatedAt) < new Date(Date.now() - thirtyDays));
+	const cachedHotspotIds = cachedHotspots.map(({hotspotId}) => hotspotId);
+	const staleHotspotIds = staleHotspots.map(({hotspotId}) => hotspotId);
+	const fetchableHotspots = hotspotIds.filter(id => ! cachedHotspotIds.includes(id) || staleHotspotIds.includes(id));
+	
+	if (fetchableHotspots.length > 0) {
+		await updateBarcharts(fetchableHotspots, hotspotsInRadius, speciesCode);
+	}
 
-	const hotspots = locations.filter(location => location.hs === 1 && location.n);
-	await updateBarcharts(hotspots, speciesCode);
-	res.send('Success');
+	const results = await abundance.find({ speciesCode: speciesCode }).sort('-average').select('-_id hotspotName hotspotId average totalSamples').lean();
+
+	res.json(results);
 }
 
-const updateBarcharts = async (hotspots, speciesCode) => {
+const updateBarcharts = async (hotspots, hotspotNames, speciesCode) => {
 	const browser = await puppeteer.launch({
 		// TO DO: Skip loading assets
 		userDataDir: "./puppeteer_data"
@@ -55,11 +53,11 @@ const updateBarcharts = async (hotspots, speciesCode) => {
 	}
 
 	const responses = await page.evaluate(async (hotspots, speciesCode) => {
-		const promises = hotspots.map(hotspot => () => fetch(`https://ebird.org/barchartData?fmt=json&spp=${speciesCode}&r=${hotspot.n}`).then(res => res.json()));
+		const promises = hotspots.map(hotspot => () => fetch(`https://ebird.org/barchartData?fmt=json&spp=${speciesCode}&r=${hotspot}`).then(res => res.json()));
 
 		let json = [];
 		while (promises.length) {
-			const chunk = await Promise.all(promises.splice(0, 24).map(func => func()));
+			const chunk = await Promise.all(promises.splice(0, 10).map(func => func()));
 			json = [...json, ...chunk];
 		}
 
@@ -67,11 +65,13 @@ const updateBarcharts = async (hotspots, speciesCode) => {
 	}, hotspots, speciesCode);
 
 	browser.close();
+
+	console.log(responses.length);
 	
 	responses.forEach(async (response, index) => {
 		const data = response.dataRows[0];
-		const hotspotId = hotspots[index].n; // TO DO: Ensure hotspot indexes match responses indexes
-		const hotspotInfo = await axios.get(`https://api.ebird.org/v2/ref/hotspot/info/${hotspotId}`);
+		const hotspotId = hotspots[index]; // TO DO: Ensure hotspot indexes match responses indexes
+		let hotspotName = hotspotNames[hotspotId];
 		const percents = data.values;
 		const samples = data.values_N;
 		const totalObserved = percents.reduce((sum, percent, index) => sum + (percent * samples[index]));
@@ -85,15 +85,22 @@ const updateBarcharts = async (hotspots, speciesCode) => {
 			average,
 			totalSamples,
 			speciesName: data.name,
-			hotspotName: hotspotInfo.data.name,
+			hotspotName,
 			updatedAt: new Date(),
 		}
 		await abundance.findOneAndUpdate(filter, update, {
 			upsert: true,
 		});
 	});
-	
-	
+}
+
+const getHotspotsInRadius = async (lat, lng, distance) => {
+	const hotspotsInRadius = await axios.get(`https://api.ebird.org/v2/ref/hotspot/geo?lat=${lat}&lng=${lng}&fmt=json&dist=${distance}`);
+	const hotspotNames = {}
+	for (const {locId, locName} of hotspotsInRadius.data) {
+		hotspotNames[locId] = locName;
+	}
+	return hotspotNames;
 }
 
 const getLocationsWithinBounds = async (speciesCode, {maxLat, minLat, maxLng, minLng}) => {
@@ -104,15 +111,6 @@ const getLocationsWithinBounds = async (speciesCode, {maxLat, minLat, maxLng, mi
 		json = JSON.parse(response);
 	} catch (error) {}
 	return json;
-}
-
-const getSpeciesInfo = async (speciesCode) => {
-	try {
-		const response = await axios.get(`https://api.ebird.org/v2/ref/taxonomy/ebird?species=${speciesCode}&fmt=json`);
-		return response.data[0];
-	} catch (error) {
-		return false;
-	}
 }
 
 const getSecureEbirdContent = async (url) => {
