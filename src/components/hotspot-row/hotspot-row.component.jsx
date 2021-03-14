@@ -1,15 +1,15 @@
 import React from 'react';
 import './hotspot-row.styles.scss';
-const HotspotRow = ({location_id, average, total_checklists, location_name }) => {
+const HotspotRow = ({id, avg, n, name }) => {
 	return (
-		<li className="row" key={location_id}>
+		<li className="row">
 			<div className="col-md-6">
-				<a href={`https://ebird.org/hotspot/${location_id}`} target='_blank' rel='noopener noreferrer'>{location_name}</a>
+				<a href={`https://ebird.org/hotspot/${id}`} target='_blank' rel='noopener noreferrer'>{name}</a>
 			</div>
 			<div className="col-md-6">
-				<b className="percent text-muted">{average}%</b> of {total_checklists} checklists
+				<b className="percent text-muted">{avg}%</b> of {n} checklists
 				<div className="progress">
-					<div className="progress-bar" style={{width: `${average}%`}}></div>
+					<div className="progress-bar" style={{width: `${avg}%`}}></div>
 				</div>
 			</div>
 		</li>

@@ -3,11 +3,11 @@ import axios from 'axios';
 import abundance from './models/abundance.js';
 
 export const index = async (req, res) => {
-	//To do: set constants from params
-	const speciesCode = 'coohaw';
-	const lat = 41.155599;
-	const lng = -81.508896;
-	const distance = 10;
+	const query = req.query;
+	const speciesCode = query.speciesCode;
+	const lat = parseFloat(query.lat);
+	const lng = parseFloat(query.lng);
+	const distance = parseInt(10);
 	const thirtyDays = 30*24*60*60 * 1000;
 
 	const bounds = getBounds(lat, lng, distance);
@@ -33,7 +33,16 @@ export const index = async (req, res) => {
 
 	const results = await abundance.find({ speciesCode: speciesCode }).sort('-average').select('-_id hotspotName hotspotId average totalSamples').lean();
 
-	res.json(results);
+	const formattedResults = results.map(result => {
+		return {
+			avg: Math.round(result.average * 100),
+			id: result.hotspotId,
+			name: result.hotspotName,
+			n: result.totalSamples,
+		}
+	});
+
+	res.json(formattedResults);
 }
 
 const updateBarcharts = async (hotspots, hotspotNames, speciesCode) => {
@@ -65,8 +74,6 @@ const updateBarcharts = async (hotspots, hotspotNames, speciesCode) => {
 	}, hotspots, speciesCode);
 
 	browser.close();
-
-	console.log(responses.length);
 	
 	responses.forEach(async (response, index) => {
 		const data = response.dataRows[0];
