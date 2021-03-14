@@ -31,7 +31,7 @@ const HotspotResults = ({speciesCode, lat, lng, radius}) => {
 			setHotspots([]);
 			setError(false);
 			setNoResults(false)
-			fetch(`/api/?code=${speciesCode}&lat=${lat}&lng=${lng}&distance=${radius}`)
+			fetch(`/search?speciesCode=${speciesCode}&lat=${lat}&lng=${lng}&distance=${radius}`)
 				.then( response => handleResponse(response) )
 				.then( data => {
 					setIsLoading(false);
@@ -57,7 +57,7 @@ const HotspotResults = ({speciesCode, lat, lng, radius}) => {
 			
 			<ol className="hotspot-results">
 				{hotspots.map( item => (
-					<HotspotRow key={item.location_id} {...item}/>
+					<HotspotRow key={item.id} {...item}/>
 				))}
 			</ol>
 		</div>
