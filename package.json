@@ -11,7 +11,7 @@
     "debounce": "^1.2.0",
     "debounce-promise": "^3.1.2",
     "font-awesome": "^4.7.0",
-    "node-sass": "^5.0.0",
+    "node-sass": "^7.0.0",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "react-places-autocomplete": "^7.2.1",
