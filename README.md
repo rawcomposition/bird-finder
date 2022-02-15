@@ -5,7 +5,7 @@ This is a little project I put together using React and Node.js. [eBird.org](ebi
 
 **NOTE**: This is still a work in progress. Your success using this tool may vary.
 
- ## Try it out: [https://birding.dev](https://birding.dev)
-<br>
+### Try it out: [https://birding.dev](https://birding.dev)
+
 ## Contributing
 Feel free to open a pull request if you have a feature you would like to add. There's a few features I would like to add at some point to make it more useful.
