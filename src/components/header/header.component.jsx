@@ -9,11 +9,11 @@ export default class Header extends Component {
 					<div className="container">
 						<a className="sitename" href="/">
 							<img className="icon" src="https://rawcomposition.com/logo.png" alt="Logo"/>
-							RawComposition
+							birding.dev
 						</a>
 						<nav>
-							<a href="https://rawcomposition.com/about">ABOUT</a>
-							<a href="https://rawcomposition.com/lifelist">LIFE LIST</a></nav>
+							<a href="https://rawcomposition.com/about">By RawComposition.com</a>
+						</nav>
 					</div>
 				</div>
 			</header>

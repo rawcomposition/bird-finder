@@ -77,7 +77,7 @@ const updateBarcharts = async (hotspots, hotspotNames, speciesCode) => {
 	
 	responses.forEach(async (response, index) => {
 		const data = response.dataRows[0];
-		const hotspotId = hotspots[index]; // TO DO: Ensure hotspot indexes match responses indexes
+		const hotspotId = hotspots[index]; // TODO: Ensure hotspot indexes match responses indexes
 		let hotspotName = hotspotNames[hotspotId];
 		const percents = data.values;
 		const samples = data.values_N;
