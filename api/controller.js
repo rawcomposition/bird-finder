@@ -47,7 +47,7 @@ export const index = async (req, res) => {
 
 const updateBarcharts = async (hotspots, hotspotNames, speciesCode) => {
 	const browser = await puppeteer.launch({
-		// TO DO: Skip loading assets
+		// TODO: Skip loading assets
 		userDataDir: "./puppeteer_data"
 	});
 	const page = await browser.newPage();

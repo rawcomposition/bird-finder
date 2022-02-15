@@ -31,7 +31,7 @@ const HotspotResults = ({speciesCode, lat, lng, radius}) => {
 			setHotspots([]);
 			setError(false);
 			setNoResults(false)
-			fetch(`/search?speciesCode=${speciesCode}&lat=${lat}&lng=${lng}&distance=${radius}`)
+			fetch(`${process.env.REACT_APP_API}/search?speciesCode=${speciesCode}&lat=${lat}&lng=${lng}&distance=${radius}`)
 				.then( response => handleResponse(response) )
 				.then( data => {
 					setIsLoading(false);
@@ -47,7 +47,7 @@ const HotspotResults = ({speciesCode, lat, lng, radius}) => {
 					setIsLoading(false);
 				});
 		}
-	}, [speciesCode, lat, lng, radius])
+	}, [speciesCode, lat, lng, radius]);
 	
 	return (
 		<div className='results-container'>

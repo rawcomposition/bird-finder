@@ -13,7 +13,7 @@ const App = ({location: {search}}) => {
 	const [searchData, setSearchData] = useState({});
 	const [urlState, setUrlState] = useState({});
 
-	useEffect( () => {
+	useEffect(() => {
 		if(search) {
 			const params = new URLSearchParams(search);
 			const urlObject = {
@@ -28,7 +28,7 @@ const App = ({location: {search}}) => {
 			setUrlState(urlObject);
 		}
 		
-	}, [search])
+	}, [search]);
 
 	const handleFind = response => {
 		const { speciesLabel, speciesCode, lat, lng, radius, address } = response;
@@ -62,7 +62,7 @@ const App = ({location: {search}}) => {
 						<a href="/?speciesCode=fernwr1&lat=-17.2660801&lng=145.4858599&radius=25&speciesLabel=Fernwren%20-%20Oreoscopus%20gutturalis&address=Atherton%20Queensland,%20Australia">Fernwren near Atherton, Queensland, Australia</a>
 					</li>
 					<li>
-						<a href="/?speciesCode=kirwar&lat=44.6614039&lng=-84.7147512&radius=10&speciesLabel=Kirtland%27s%20Warbler%20-%20Setophaga%20kirtlandii&address=Gr%C3%A9%C3%BDl%C3%AFng,%20MI,%20USA">Kirtlan's Warbler near Grayling, MI, USA</a>
+						<a href="/?speciesCode=kirwar&lat=44.6614039&lng=-84.7147512&radius=10&speciesLabel=Kirtland%27s%20Warbler%20-%20Setophaga%20kirtlandii&address=Gr%C3%A9%C3%BDl%C3%AFng,%20MI,%20USA">Kirtland's Warbler near Grayling, MI, USA</a>
 					</li>
 					<li>
 						<a href="/?speciesCode=wallcr1&lat=42.8722093&lng=-0.0834092&radius=30&speciesLabel=Wallcreeper%20-%20Tichodroma%20muraria&address=Pyr%C3%A9n%C3%A9es%20National%20Park,%20France">Wallcreeper near the Pyrénées National Park, France</a>
